@@ -8,20 +8,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @RestController
 public class DiscountController {
     private final EarlyBirdDiscountService earlyBirdDiscountService;
 
-    public DiscountController(EarlyBirdDiscountService earlyBirdDiscountService){
-        this.earlyBirdDiscountService = earlyBirdDiscountService;
+    public DiscountController(Optional<EarlyBirdDiscountService> earlyBirdDiscountService){
+        this.earlyBirdDiscountService = earlyBirdDiscountService.orElse(null);
     }
 
 
     @GetMapping("/api/discount")
     public String getDiscount(@RequestParam LocalDate bookingDate, @RequestParam LocalDate eventDate){
         if(earlyBirdDiscountService == null){
-            throw new NullPointerException("The Discount Service is disabled!");
+            return "Discount feature is disabled!";
         }
         return earlyBirdDiscountService.calculateDiscount(bookingDate, eventDate);
     }
